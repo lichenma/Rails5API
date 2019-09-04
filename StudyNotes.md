@@ -675,4 +675,69 @@ end
 ```
 
 
+The tests will not be working until we define the todo **items controller**: 
+
+```Ruby 
+# app/controllers/items_controller.rb 
+class ItemsController < ApplicationController
+  before_action :set_todo
+  before_action :set_todo_item, only: [:show, :update, :destroy]
+
+  # GET /todos/:todo_id/items
+  def index
+    json_response(@todo.items)
+  end
+
+  # GET /todos/:todo_id/items/:id
+  def show
+    json_response(@item)
+  end
+
+  # POST /todos/:todo_id/items
+  def create
+    @todo.items.create!(item_params)
+    json_response(@todo, :created)
+  end
+
+  # PUT /todos/:todo_id/items/:id
+  def update
+    @item.update(item_params)
+    head :no_content
+  end
+
+  # DELETE /todos/:todo_id/items/:id
+  def destroy
+    @item.destroy
+    head :no_content
+  end
+
+  private
+
+  def item_params
+    params.permit(:name, :done)
+  end
+
+  def set_todo
+    @todo = Todo.find(params[:todo_id])
+  end
+
+  def set_todo_item
+    @item = @todo.items.find_by!(id: params[:id]) if @todo
+  end
+end
+```
+
+That's all for the first part, so far we: 
+- Generated an API application with Rails 5 
+- Setup `RSpec` testing framework with `Factory Bot`, `Database Cleaner`, `Shoulda Matchers` and `Faker` 
+- Build models and controllers with TDD (Test Driven Development)
+- Make HTTP requests to an API using CURL 
+
+
+## For this next part we will implement token-based authentication with JWT
+
+
+
+
+
 
