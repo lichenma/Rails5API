@@ -184,3 +184,42 @@ rails db:migrate
 Following Test Driven Development, we write the model specs first: 
 
 ```Ruby 
+require 'rails_helper'
+
+RSpec.describe Todo, type: :model do
+  # Association test 
+  # ensure Todo model has 1:m relationship with the Item model 
+  it {should have_many(:items).dependent(:destory)}
+  # Validation tests
+  # ensure columns title and created_by are present before saving 
+  it {should validate_presence_of(:title)}
+  it {should validate_presence_of(:created_by)}
+end
+```
+
+RSpec has a very expressive DSL (Domain Specific Language), and the tests are almost read like a paragraph. The shoulda matcher gem provides RSpec with the association and validation matchers above.  
+
+```Ruby 
+require "rails_helper"
+
+# Test suite for the Item model 
+RSpec.describe Item, type: :model do 
+    # Association test 
+    # ensure an item record belongs to a single todo record 
+    it {should belong_to(:todo)}
+    # Validation test 
+    # ensure column name is present before saving 
+    it {should validate_presence_of(:name)}
+end 
+```
+
+We can execute the specs as follows: 
+
+```
+bundle exec rspec
+```
+
+To no surprise, we have only one test passing and four failures. We will resolve these issues: 
+
+```Ruby 
+# app/models/todo.rb 
