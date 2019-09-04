@@ -223,3 +223,38 @@ To no surprise, we have only one test passing and four failures. We will resolve
 
 ```Ruby 
 # app/models/todo.rb 
+class Todo < ApplicationRecord
+    # model association 
+    has_many :items, dependent: :destroy
+
+    # validations 
+    validates_presence_of :title, :created_by
+end
+```
+
+```Ruby
+# app/models/item.rb
+
+class Item < ApplicationRecord
+  # model association
+  belongs_to :todo
+
+  # validation 
+  validates_presence_of :name 
+  
+end
+```
+
+
+# Controllers 
+
+Now that the models are setup, we can generate the controllers 
+
+```
+rails g controller Todos 
+rails g controller Items 
+``` 
+
+Generating controllers by default generates controller specs so we will instead be writing request specs. 
+
+Request specs are designed to drive behavior through the full stack, including routing. This means that they can hit the applications' HTTP endpoints as opposed to controller specs which call methods directly. Since we are building an API application, this is exactly the kind of behavior that we want from the tests. 
