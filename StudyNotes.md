@@ -736,6 +736,22 @@ That's all for the first part, so far we:
 
 ## For this next part we will implement token-based authentication with JWT
 
+Our API should also be able to support user accounts with each user having the ability to manage their own resources. We start by generating a user model: 
+
+```
+$ rails g model User name:string email:string password_digest:string
+# run the migrations
+$ rails db:migrate
+# make sure the test environment is ready
+$ rails db:test:prepare
+```
+
+* Note: A migration in Rails is a change to the database schema but first we must generate a table (this is created when we create a model)
+
+
+Let's define the user model spec for testing: 
+
+```Ruby 
 
 
 
