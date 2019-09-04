@@ -768,7 +768,38 @@ RSpec.describe User, type: :model do
 end
 ```
 
-Users should be able to manage their 
+Users should be able to manage their own todo lists, thus the user model should have a one to many relationship with the todo model. We also want to make sure that every user account creation has all of the required credentials. 
+
+Now, we create a user factory which will be used by the test suite to create test users. 
+
+
+```Ruby 
+# spec/factories/users.rb
+FactoryBot.define do
+  factory :user do
+    name { Faker::Name.name }
+    email 'foo@bar.com'
+    password 'foobar'
+  end
+end
+```
+
+**Next we will implement the user model**
+
+```Ruby 
+# app/models/user.rb 
+class User < ApplicationRecord
+  # encrypt password
+  has_secure_password
+
+  # Model associations
+  has_many :todos, foreign_key: :created_by
+  # Validations
+  validates_presence_of :name, :email, :password_digest
+end
+```
+
+Our user model defines a 1:m relationship with the todo model also adds field validations. Note that the user also calls the method `has_secure_password` which is a method providing ways to authenticate against a `bcrypt` password. 
 
 
 
