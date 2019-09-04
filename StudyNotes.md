@@ -99,4 +99,26 @@ Now we can install the gems by running:
 bundle install
 ```
 
+Initialize the `spec` directory (where our tests will reside)
+
+```
+rails generate rspec:install
+```
+
+This will add the following files which can be used for configuration: 
+- .rspec 
+- spec/spec_helper.rb
+- spec/rails_helper.rb 
+
+Create a `factories` directory (factory bot uses this as the default). This is where we will define the model factories 
+
+```
+mkdir spec/factories 
+```
+
+In `spec/rails_helper.rb` we will have: 
+
+```Ruby 
+
+
 
