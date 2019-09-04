@@ -38,5 +38,5 @@ To be Updated
 
 ## Acknowledgments
 
-* Botond Toptal
+* Austin Scotch.io
 
