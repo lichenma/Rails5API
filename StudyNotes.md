@@ -912,7 +912,15 @@ end
 
 We have added custom `Standard Error` sub-classes to help handle exceptions raised. By defining error classes as sub-classes of standard error, we are able to `rescue_from` them once raised 
 
+# Authorize API Request 
 
+This class will be responsible for authorizing all API requests and making sure that all requests have a valid token and user payload. 
+
+This is an authentication service class so it will be in `app/auth`: 
+
+```
+
+```
 
 
 
