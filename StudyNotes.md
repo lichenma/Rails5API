@@ -837,6 +837,83 @@ bundle install
 
 Our class will be in the `lib` directory since it is not domain specific and if we were to move it to a different application it should work with minimal configuration. However, as of Rails 5, **autoloading is disabled in production because of thread safety**.
 
+This is an issue as `lib` is part of auto-load paths and so to counter this we will add our `lib` in `app` since all code in the app is auto-loaded in development and eager-loaded in production. 
+
+```
+$ mkdir app/lib
+$ touch app/lib/json_web_token.rb
+```
+
+In `json_web_token.rb` we define the jwt singleton: 
+
+```Ruby 
+# app/lib/json_web_token.rb 
+class JsonWebToken 
+  # secret to encode and decode token 
+  HMAC_SECRET = Rails.application.secrets.secret_key_base
+
+  def self.encode(payload, exp = 24.hours.from_now)
+    # set expiry to 24 hours from creation time
+    payload[:exp] = exp.to_i
+    # sign token with application secret
+    JWT.encode(payload, HMAC_SECRET)
+  end
+
+  def self.decode(token)
+    # get payload; first index in decoded Array
+    body = JWT.decode(token, HMAC_SECRET)[0]
+    HashWithIndifferentAccess.new body
+    # rescue from all decode errors
+  rescue JWT::DecodeError => e
+    # raise custom error to be handled by custom handler
+    raise ExceptionHandler::InvalidToken, e.message
+  end
+end
+```
+
+This singleton wraps `JWT` and provides token encoding and decoding methods. The encode method is responsible for creating tokens based on the user id payload and expiration period. Since every Rails application has a unique secret key, we will use that as our secret to sign tokens. The decode method, on the other hand, accepts a token and attempts to decode it using the same secret used in encoding. In the event decoding fails (possibly from expiration/validation), `JWT` will raise respective exceptions which will be caught and handled by the `Exception Handler` module. 
+
+
+
+```Ruby 
+module ExceptionHandler
+  extend ActiveSupport::Concern
+
+  # Define custom error subclasses - rescue catches `StandardErrors`
+  class AuthenticationError < StandardError; end
+  class MissingToken < StandardError; end
+  class InvalidToken < StandardError; end
+
+  included do
+    # Define custom handlers
+    rescue_from ActiveRecord::RecordInvalid, with: :four_twenty_two
+    rescue_from ExceptionHandler::AuthenticationError, with: :unauthorized_request
+    rescue_from ExceptionHandler::MissingToken, with: :four_twenty_two
+    rescue_from ExceptionHandler::InvalidToken, with: :four_twenty_two
+
+    rescue_from ActiveRecord::RecordNotFound do |e|
+      json_response({ message: e.message }, :not_found)
+    end
+  end
+
+  private
+
+  # JSON response with message; Status code 422 - unprocessable entity
+  def four_twenty_two(e)
+    json_response({ message: e.message }, :unprocessable_entity)
+  end
+
+  # JSON response with message; Status code 401 - Unauthorized
+  def unauthorized_request(e)
+    json_response({ message: e.message }, :unauthorized)
+  end
+end
+```
+
+We have added custom `Standard Error` sub-classes to help handle exceptions raised. By defining error classes as sub-classes of standard error, we are able to `rescue_from` them once raised 
+
+
+
 
 
 
