@@ -119,6 +119,68 @@ mkdir spec/factories
 In `spec/rails_helper.rb` we will have: 
 
 ```Ruby 
+# require database cleaner 
+require 'database_cleaner'
+
+# configure shoulda matchers to use rspec as the test framework and full matcher libraries for rails
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
 
 
+RSpec.configure do |config|
+  # add `FactoryBot` methods
+  config.include FactoryBot::Syntax::Methods
 
+  # start by truncating all the tables but then use the faster transaction strategy the rest of the time.
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  # start the transaction strategy as examples are run
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+  end
+
+end
+```
+
+## Models 
+
+We start by generating the `Todo` model
+
+```
+rails g model Todo title:string created_by:string
+```
+
+We included the model attributes in the model generation command so that we don't have to modify the migration file. The generator invokes `active record` and `rspec` to generate the migration, model, and `spec` respectively. 
+
+
+```Ruby 
+class CreateTodos < ActiveRecord::Migration[6.0]
+  def change
+    create_table :todos do |t|
+      t.string :name
+      t.boolean :done
+      t.references :todo, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+```
+
+We can run the migrations at this point: 
+```
+rails db:migrate
+```
+
+Following Test Driven Development, we write the model specs first: 
+
+```Ruby 
