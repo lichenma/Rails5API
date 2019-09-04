@@ -799,7 +799,45 @@ class User < ApplicationRecord
 end
 ```
 
-Our user model defines a 1:m relationship with the todo model also adds field validations. Note that the user also calls the method `has_secure_password` which is a method providing ways to authenticate against a `bcrypt` password. 
+Our user model defines a 1:m relationship with the todo model also adds field validations. Note that the user also calls the method `has_secure_password` which is a method providing ways to authenticate against a `bcrypt` password. It is this mechanism that requires us to have a `password_digest` field instead of a normal `password` field. 
+
+Thus we need to have the `bcrypt` gem as a dependency. 
+
+```
+# Gemfile 
+gem 'bcrypt', '~> 3.1.7'
+```
+
+Now we can install the gem and run the tests: 
+
+```
+bundle install 
+bundle exec rspec 
+```
+
+Now the model is all setup to save users and we can add the rest of the service classes for authentication: 
+- `JsonWebToken`: Encode and decode `jwt` tokens 
+- `AuthorizeApiRequest`: Authorize each API request
+- `AuthenticateUser`: Authenticate Users 
+- `AuthenticationController`: Orchestrate authentication process 
+
+
+# JSON Web Token 
+
+We will be using the `jwt` gem to manage JSON web tokens: 
+
+```Ruby 
+# Gemfile 
+gem 'jwt' 
+```
+
+```
+bundle install 
+```
+
+Our class will be in the `lib` directory since it is not domain specific and if we were to move it to a different application it should work with minimal configuration. However, as of Rails 5, **autoloading is disabled in production because of thread safety**.
+
+
 
 
 
