@@ -412,6 +412,139 @@ RSpec.describe 'Todos API', type: :request do
 end
 ```
 
-This script 
+This script starts by populating the database a list of 10 todo records using factory bot. We also have a helper method `json` which parses the JSON response to a Ruby Hash which is easier to work with in our tests. 
+
+
+Right now if we run the tests we get failing routing errors - this is because we haven't defined the routes yet. We define them in `config/routes.rb`. 
+
+```Ruby 
+# config/routes.rb
+Rails.application.routes.draw do
+  resources :todos do
+    resources :items
+  end
+end
+```
+
+In our route definition, we are creating todo resource with a nested item resource. This enforces the 1:m (one to many) associations at the routing level. To view the routes, we can run the following: 
+
+```
+rails routes
+```
+
+Now the routing error is gone, we can now work on fixing the controller failures. Here is the definition of the controller methods 
+
+# Controller Methods 
+
+**Recall controllers in Rails do the work of parsing user requests, data submissions, cookies, sessions and the "browser stuff". They are the managers that orders employees around and will ususally ask the model to retrieve resources** 
+
+```Ruby 
+class TodosController < ApplicationController 
+  before_action :set_todo, only: [:show, :update, :destroy]
+
+  # GET /todos 
+  def index 
+    @todos = Todo.all 
+    json_response(@todos)
+  end 
+
+  # POST /todos 
+  def create 
+    @todo = Todo.create!(todo_params)
+    json_response(@todo, :created)
+  end 
+
+  # GET /todos/:id 
+  def show 
+    json_response(@todo)
+  end 
+
+  # PUT /todos/:id
+  def update 
+    @todo.update(todo_params)
+    head :no_content
+  end 
+
+  # DELETE /todos/:id
+  def destroy
+    @todo.destroy
+    head :no_content
+  end 
+
+  private 
+
+  def todo_params 
+    # whitelist params 
+    params.permit(:title, :created_by)
+  end 
+
+  def set_todo
+    @todo = Todo.find(params[:id])
+  end 
+end 
+```
+
+You will notice that we have multiple helper functions: 
+
+- `json_response` which responds with JSON and an HTTP status code (200 by default). We define this method in concerns folder 
+
+
+```Ruby 
+# app/controllers/concerns/response.rb
+module Response
+  def json_response(object, status = :ok)
+    render json: object, status: status
+  end
+end
+```
+
+- `set_todo`: callback method to find a todo by id. In the case where the record does not exist, ActiveRecord will throw an exception `ActiveRecord::RecordNotFound`. We will rescue from this exception and return a `404` message 
+
+* Note: `rescue` is similar to the try catch block from Java and there are methods for handling errors in Ruby on Rails. Without `rescue`, invalid inputs which should return `400 invalid input` instead respond with `500 server error` 
+
+
+```Ruby 
+# app/controllers/concerns/exception_handler.rb 
+module ExceptionHandler
+  # provides the more graceful `included` method 
+  extend ActiveSupport::Concern 
+
+  included do 
+    rescue_from ActiveRecord::RecordNotFound do |e|
+      json_response({message: e.message}, :not_found)
+    end 
+
+    rescue_from ActiveRecord::RecordInvalid do |e|
+      json_response({message: e.message}, :unprocessable_entity)
+    end 
+  end 
+end 
+```
+
+In our `create` method in `TodosController` we are using `!create` instead of just `create`. This will make the model raise an exception `ActiveRecord::RecordInvalid` and this allows us to avoid deep nested if statements in the controller. We can then resue this exception in the `ExceptionHandler` module. 
+
+At the moment, the controller classes do not know about these helpers and we can fix that by including these modules in the application controller
+
+```Ruby 
+# app/controllers/application_controller.rb 
+class ApplicationController < ActionController::API
+  include Response 
+  include ExceptionHandler 
+end 
+``` 
+
+Now the tests should be working and we can try manual testing by starting the server 
+
+```
+rails s 
+```
+ 
+
+
+
+
+
+```
+
 
 
