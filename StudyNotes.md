@@ -1783,9 +1783,10 @@ end
 The `ApiVersion` class accepts a version and a default flag on initialization. In accordance with Rails constraints, we implement an instance method `matches?`. This method will be called with the request object upon initialization. From the request obejct, we can access the `Accept`. This process is called **content negotiation**.
 
 
+
 # Content Negotiation 
 
-REST is 
+REST is closely tied to the HTTP specification. HTTP defines mechanisms that make it possible to serve different versions ()
 
 
 
