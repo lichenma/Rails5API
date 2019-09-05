@@ -1353,6 +1353,99 @@ $ rails g controller Users
 $ touch spec/requests/users_spec.rb
 ```
 
+Next we write up the testing specifications for user signup: 
+
+```Ruby 
+# spec/requests/users_spec.rb
+require 'rails_helper'
+
+RSpec.describe 'Users API', type: :request do
+  let(:user) { build(:user) }
+  let(:headers) { valid_headers.except('Authorization') }
+  let(:valid_attributes) do
+    attributes_for(:user, password_confirmation: user.password)
+  end
+
+  # User signup test suite
+  describe 'POST /signup' do
+    context 'when valid request' do
+      before { post '/signup', params: valid_attributes.to_json, headers: headers }
+
+      it 'creates a new user' do
+        expect(response).to have_http_status(201)
+      end
+
+      it 'returns success message' do
+        expect(json['message']).to match(/Account created successfully/)
+      end
+
+      it 'returns an authentication token' do
+        expect(json['auth_token']).not_to be_nil
+      end
+    end
+
+    context 'when invalid request' do
+      before { post '/signup', params: {}, headers: headers }
+
+      it 'does not create a new user' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns failure message' do
+        expect(json['message'])
+          .to match(/Validation failed: Password can't be blank, Name can't be blank, Email can't be blank, Password digest can't be blank/)
+      end
+    end
+  end
+end
+```
+
+The user controller should expose a `/signup` endpoint that accepts user information and returns a JSON response with the result. Add the signup route: 
+
+
+
+```Ruby 
+# config/routes.rb
+Rails.application.routes.draw do
+  # [...]
+  post 'signup', to: 'users#create'
+end
+```
+
+Now let's implement the **user controller**: 
+
+
+```Ruby 
+# app/controllers/users_controller.rb
+class UsersController < ApplicationController
+  # POST /signup
+  # return authenticated token upon signup
+  def create
+    user = User.create!(user_params)
+    auth_token = AuthenticateUser.new(user.email, user.password).call
+    response = { message: Message.account_created, auth_token: auth_token }
+    json_response(response, :created)
+  end
+
+  private
+
+  def user_params
+    params.permit(
+      :name,
+      :email,
+      :password,
+      :password_confirmation
+    )
+  end
+end
+```
+
+The users controller attempts to create a user and returns a JSON response with the result. We use Active Record's `create!` method so that in the event there's an error, an exception will b raised and handled in the exception handler. 
+
+
+
+
+
 
 
 
