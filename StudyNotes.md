@@ -1153,7 +1153,73 @@ end
 ```
 
 
-Now we can run the 
+Now we can run the authentication specs and everything should pass. 
+
+```
+bundle exec rspec spec/auth -fd
+```
+
+
+# Authenticate User 
+
+This class will be responsible for authenticating users via email and password. 
+
+This is also an authentication service class so it will live in `app/auth` 
+
+
+```
+$ touch app/auth/authenticate_user.rb
+# Create corresponding spec file
+$ touch spec/auth/authenticate_user_spec.rb
+```
+
+Now let's define the specifications: 
+
+```Ruby 
+# spec/auth/authenticate_user_spec.rb
+require 'rails_helper'
+
+RSpec.describe AuthenticateUser do
+  # create test user
+  let(:user) { create(:user) }
+  # valid request subject
+  subject(:valid_auth_obj) { described_class.new(user.email, user.password) }
+  # invalid request subject
+  subject(:invalid_auth_obj) { described_class.new('foo', 'bar') }
+
+  # Test suite for AuthenticateUser#call
+  describe '#call' do
+    # return token when valid request
+    context 'when valid credentials' do
+      it 'returns an auth token' do
+        token = valid_auth_obj.call
+        expect(token).not_to be_nil
+      end
+    end
+
+    # raise Authentication Error when invalid request
+    context 'when invalid credentials' do
+      it 'raises an authentication error' do
+        expect { invalid_auth_obj.call }
+          .to raise_error(
+            ExceptionHandler::AuthenticationError,
+            /Invalid credentials/
+          )
+      end
+    end
+  end
+end
+```
+
+The `AuthenticateUser` service also has an entry point `#call`. It should return a token when the user credentials are valid and raise an error when they are not. Running the auth specs and they should fail with a load error. To fix that we will go ahead and implement the class. 
+
+```
+
+```
+
+
+
+
 
 
 
