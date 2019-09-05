@@ -1011,7 +1011,149 @@ The `AuthorizeApiRequest` service should have an entry method `call` that return
 
 We will define these functions in `spec/support`: 
 
+```
+# create module file
+$ touch spec/support/controller_spec_helper.rb
+```
 
+Here are the contents of the file: 
+
+```Ruby
+# spec/support/controller_spec_helper.rb
+module ControllerSpecHelper
+  # generate tokens from user id
+  def token_generator(user_id)
+    JsonWebToken.encode(user_id: user_id)
+  end
+
+  # generate expired tokens from user id
+  def expired_token_generator(user_id)
+    JsonWebToken.encode({ user_id: user_id }, (Time.now.to_i - 10))
+  end
+
+  # return valid headers
+  def valid_headers
+    {
+      "Authorization" => token_generator(user.id),
+      "Content-Type" => "application/json"
+    }
+  end
+
+  # return invalid headers
+  def invalid_headers
+    {
+      "Authorization" => nil,
+      "Content-Type" => "application/json"
+    }
+  end
+end
+```
+
+We are also using additional test helpers to generate headers. In order to make use of these helper methods, we need to include the module in `rails helper`. 
+
+
+
+```Ruby
+RSpec.configure do |config|
+  # [...]
+  # previously `config.include RequestSpecHelper, type: :request`
+  config.include RequestSpecHelper
+  config.include ControllerSpecHelper
+  # [...]
+end
+```
+
+
+Now having written up our tests, we can define the class: 
+
+```Ruby 
+# app/auth/authorize_api_request.rb
+class AuthorizeApiRequest
+  def initialize(headers = {})
+    @headers = headers
+  end
+
+  # Service entry point - return valid user object
+  def call
+    {
+      user: user
+    }
+  end
+
+  private
+
+  attr_reader :headers
+
+  def user
+    # check if user is in the database
+    # memoize user object
+    @user ||= User.find(decoded_auth_token[:user_id]) if decoded_auth_token
+    # handle user not found
+  rescue ActiveRecord::RecordNotFound => e
+    # raise custom error
+    raise(
+      ExceptionHandler::InvalidToken,
+      ("#{Message.invalid_token} #{e.message}")
+    )
+  end
+
+  # decode authentication token
+  def decoded_auth_token
+    @decoded_auth_token ||= JsonWebToken.decode(http_auth_header)
+  end
+
+  # check for token in `Authorization` header
+  def http_auth_header
+    if headers['Authorization'].present?
+      return headers['Authorization'].split(' ').last
+    end
+      raise(ExceptionHandler::MissingToken, Message.missing_token)
+  end
+end
+```
+
+The `AuthorizeApiRequest` service gets the token from the authorization headers, attempts to decode it to return a valid user object. We also have a singleton `Message` to house all our messages. This is an easier way to manage all of the application messages. We will define it in `app/lib` since it is non-domain-specific. 
+
+
+```Ruby 
+# app/lib/message.rb
+class Message
+  def self.not_found(record = 'record')
+    "Sorry, #{record} not found."
+  end
+
+  def self.invalid_credentials
+    'Invalid credentials'
+  end
+
+  def self.invalid_token
+    'Invalid token'
+  end
+
+  def self.missing_token
+    'Missing token'
+  end
+
+  def self.unauthorized
+    'Unauthorized request'
+  end
+
+  def self.account_created
+    'Account created successfully'
+  end
+
+  def self.account_not_created
+    'Account could not be created'
+  end
+
+  def self.expired_token
+    'Sorry, your token has expired. Please login to continue.'
+  end
+end
+```
+
+
+Now we can run the 
 
 
 
