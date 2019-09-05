@@ -1705,8 +1705,27 @@ end
 
 Now if we re-run the tests then everything should be working properly. At this point the application is able to implement token based authentication with JWT. 
 
+We can also test locally and manually: 
+
+```
+# Attempt to access API without a token
+$ http :3000/todos
+# Signup a new user - get token from here
+$ http :3000/signup name=ash email=ash@email.com password=foobar password_confirmation=foobar
+# Get new user todos
+$ http :3000/todos \
+> Authorization:'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozLCJleHAiOjE0ODg5MDEyNjR9.7txvLgDzFdX5NIUGYb3W45oNIXinwB_ITu3jdlG5Dds'
+# create todo for new user
+$ http POST :3000/todos title=Beethoven \
+> Authorization:'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozLCJleHAiOjE0ODg5MDEyNjR9.7txvLgDzFdX5NIUGYb3W45oNIXinwB_ITu3jdlG5Dds'
+# Get create todos
+$ http :3000/todos \
+Authorization:'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozLCJleHAiOjE0ODg5MDEyNjR9.7txvLgDzFdX5NIUGYb3W45oNIXinwB_ITu3jdlG5Dds'
+```
+
 
 Next we will cover `API versioning`, `pagination` and `serialization`. 
+
 
 
 
