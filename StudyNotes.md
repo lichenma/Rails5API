@@ -1443,8 +1443,104 @@ end
 The users controller attempts to create a user and returns a JSON response with the result. We use Active Record's `create!` method so that in the event there's an error, an exception will b raised and handled in the exception handler. 
 
 
+Current we have wired up the user authentication portion but the API is still open - it does not authorize requests with a token. To fix this, we need to make sure that on every request (except authentication) our API checks for a valid token. To achieve this we will implement a **callback in the application controller that authenticates every request. Since all controllers inherit from application controller, it will be propagated to all controllers**. 
 
 
+First we have the controller specifications: 
+
+```Ruby 
+# spec/controllers/application_controller_spec.rb
+require "rails_helper"
+
+RSpec.describe ApplicationController, type: :controller do
+  # create test user
+  let!(:user) { create(:user) }
+   # set headers for authorization
+  let(:headers) { { 'Authorization' => token_generator(user.id) } }
+  let(:invalid_headers) { { 'Authorization' => nil } }
+
+  describe "#authorize_request" do
+    context "when auth token is passed" do
+      before { allow(request).to receive(:headers).and_return(headers) }
+
+      # private method authorize_request returns current user
+      it "sets the current user" do
+        expect(subject.instance_eval { authorize_request }).to eq(user)
+      end
+    end
+
+    context "when auth token is not passed" do
+      before do
+        allow(request).to receive(:headers).and_return(invalid_headers)
+      end
+
+      it "raises MissingToken error" do
+        expect { subject.instance_eval { authorize_request } }.
+          to raise_error(ExceptionHandler::MissingToken, /Missing token/)
+      end
+    end
+  end
+end
+```
+
+Now that we have the tests, we can implement the **authorization controller**: 
+
+```Ruby 
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::API
+  include Response
+  include ExceptionHandler
+
+  # called before every action on controllers
+  before_action :authorize_request
+  attr_reader :current_user
+
+  private
+
+  # Check for valid request token and return user
+  def authorize_request
+    @current_user = (AuthorizeApiRequest.new(request.headers).call)[:user]
+  end
+end
+```
+
+On every request, the application will verify the request by calling the request authorization service. If the request is authorized, it will set the `current user` object to be used in other controllers. 
+
+
+The error handling implementation used in this controller also allows us to have minimal guard clauses and conditionals in our controllers. 
+
+
+Remember that when signing up and authenticating a user we won't need a token. We only require user credentials. Thus, we can skip request authentication for these two actions. 
+
+
+First the authentication action: 
+
+
+```Ruby 
+# app/controllers/authentication_controller.rb
+class AuthenticationController < ApplicationController
+  skip_before_action :authorize_request, only: :authenticate
+  # [...]
+end
+```
+
+
+Then the user signup action: 
+
+
+```Ruby
+# app/controllers/users_controller.rb
+class UsersController < ApplicationController
+  skip_before_action :authorize_request, only: :create
+  # [...]
+end
+```
+
+
+Right now when we run the tests we should see that the Todo and TodoItems API is failing. This is exactly as we expected - it means that our request authorization is working as intended. Now let's update the API to cater for this. 
+
+
+In the Todos request spec, we will make a partial update to all of our requests to have authorization headers and a JSON payload. 
 
 
 
