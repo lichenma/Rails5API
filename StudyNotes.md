@@ -1727,6 +1727,63 @@ Authorization:'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozLCJleHAiOjE0
 Next we will cover `API versioning`, `pagination` and `serialization`. 
 
 
+# Versioning 
+
+When building an API whether public or internal facing, it is highly recommended that developers use versioning. When the API is public facing it is in our best interest to establish a contract with your clients - every breaking change should be a new version. 
+
+In order to version a Rails API, we require two things 
+
+1. A route constraint - this will select a version based on the request headers 
+2. Namespace the controllers - have different controller namespaces to handle different versions 
+
+
+Rails routing supports `advanced constraints`. Provided that an object responds to `matches?`, we can control which controller handles a specific route. 
+
+
+We will define a class `ApiVersion` that checks the API version from the request headers and routes to the appropriate controller module. The class will live in `app/lib` since it's non-domain-specific. 
+
+
+```
+# create the class file
+$ touch app/lib/api_version.rb
+```
+
+Implement the class `ApiVersion`: 
+
+* Note: In ruby any variables declared with the `@` symbol are instance variables which are available to all methods within the class 
+
+* Note: Normal variables declared without the `@` symbol are local variables which only exists within its scope (current block)
+  
+
+```Ruby
+# app/lib/api_version.rb
+class ApiVersion
+  attr_reader :version, :default
+
+  def initialize(version, default = false)
+    @version = version
+    @default = default
+  end
+
+  # check whether version is specified or is default
+  def matches?(request)
+    check_headers(request.headers) || default
+  end
+
+  private
+
+  def check_headers(headers)
+    # check version from Accept headers; expect custom media type `todos`
+    accept = headers[:accept]
+    accept && accept.include?("application/vnd.todos.#{version}+json")
+  end
+end
+```
+
+
+
+
+
 
 
 
