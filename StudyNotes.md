@@ -1343,6 +1343,17 @@ end
 ```
 
 
+In order to have users authenticate we need to have them signup first - this will be handled by the users controller. 
+
+
+```
+# generate users controller
+$ rails g controller Users
+# generate users request spec
+$ touch spec/requests/users_spec.rb
+```
+
+
 
 
 
