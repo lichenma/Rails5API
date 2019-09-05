@@ -1310,7 +1310,33 @@ RSpec.describe 'Authentication', type: :request do
 end
 ```
 
+Next we will define the **authentication controller class** which will expose an `/auth/login` endpoint that accepts user credentials and returns a JSON response with the result. 
 
+
+```Ruby 
+# app/controllers/authentication_controller.rb
+class AuthenticationController < ApplicationController
+  # return auth token once user is authenticated
+  def authenticate
+    auth_token =
+      AuthenticateUser.new(auth_params[:email], auth_params[:password]).call
+    json_response(auth_token: auth_token)
+  end
+
+  private
+
+  def auth_params
+    params.permit(:email, :password)
+  end
+end
+```
+
+Notice that the authentication controller is very compact and this is due to all of the helper functions which we have defined in the service architecture. We use the authentication controller to piece everything together ... to control authentication. Now we need to add routing for the authentication action. 
+
+
+```Ruby 
+
+```
 
 
 
