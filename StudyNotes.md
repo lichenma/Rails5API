@@ -1335,8 +1335,14 @@ Notice that the authentication controller is very compact and this is due to all
 
 
 ```Ruby 
-
+# config/routes.rb
+Rails.application.routes.draw do
+  # [...]
+  post 'auth/login', to: 'authentication#authenticate'
+end
 ```
+
+
 
 
 
