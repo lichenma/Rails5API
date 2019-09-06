@@ -1923,6 +1923,39 @@ Remeber that non-default versions have to be defined above the default version.
 
 `routes.rb` serves as the Rails router which recognizes URLs and dispathces them to a controller's action, or to a Rack application. It can also generate paths and URLs, avoiding the need to hardcode strings in the views. 
 
+Let's look at an example, suppose the Rails application receives an incoming request for: 
+
+```
+GET /patients/17
+```
+
+It will ask the router to match it to a controller action. If the first matching route is: 
+
+```bash
+get '/patients/:id', to: 'patients#show'
+```
+
+Then the request is dispatched to the `patients` controller's `show` action with `{ id: '17' }` in `params`. 
+
+In Rails it is also possible to generate paths and URLs from code. If the route is modified to be 
+
+```bash 
+get '/patients/:id', to: 'patients#show', as: 'patient'
+```
+
+and the application contains **this code in the controller:** 
+
+```Ruby
+@patient = Patient.find(params[:id])
+```
+
+and this in the corresponding view: 
+
+```html 
+<%= link_to 'Patient Record', patient_path(@patient) %>
+```
+
+Then the router will generate the path `/patients/17 `. This reduces the brittleness of the view and makes your code easier to understand. Note that the id does not need to be specified in the route helper. 
 
 
 
