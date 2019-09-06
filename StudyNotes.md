@@ -1873,7 +1873,7 @@ end
 We can attempt to start testing but since we are attemping to access a nonexistent version, the API will default to v1 since we set it as the default version. 
 
 
-```
+```bash
 # get auth token
 $ http :3000/auth/login email=foo@bar.com password=foobar
 # get todos from API v1
@@ -1881,6 +1881,48 @@ $ http :3000/todos Accept:'application/vnd.todos.v1+json' Authorization:'ey...AW
 # attempt to get from API v2
 $ http :3000/todos Accept:'application/vnd.todos.v2+json' Authorization:'ey...AWH3FNTd3T0jMB7HnLw2bYQbK0g'
 ```
+
+
+Now we generate a v2 todos controller
+
+```
+$ rails g controller v2/todos
+```
+
+Define the namespace in the routes 
+
+
+```Ruby 
+# config/routes
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  # module the controllers without affecting the URI
+  scope module: :v2, constraints: ApiVersion.new('v2') do
+    resources :todos, only: :index
+  end
+
+  
+  # namespace the controllers without affecting the URI
+  scope module: :v1, constraints: ApiVersion.new('v1', true) do
+    resources :todos do
+      resources :items
+    end
+  end
+
+
+  post 'auth/login', to: 'authentication#authenticate'
+  post 'signup', to: 'users#create'
+end
+```
+
+Remeber that non-default versions have to be defined above the default version. 
+
+
+## Rails Router 
+
+`routes.rb` serves as the Rails router which recognizes URLs and dispathces them to a controller's action, or to a Rack application. It can also generate paths and URLs, avoiding the need to hardcode strings in the views. 
+
 
 
 
