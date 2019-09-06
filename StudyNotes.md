@@ -1786,7 +1786,54 @@ The `ApiVersion` class accepts a version and a default flag on initialization. I
 
 # Content Negotiation 
 
-REST is closely tied to the HTTP specification. HTTP defines mechanisms that make it possible to serve different versions ()
+REST is closely tied to the HTTP specification. HTTP defines mechanisms that **make it possible to serve different versions (representations) of a resource at the same URI. This is called content negotiation.**
+
+Our `ApiVersion` class inplements server-driven content negotiation where the client (user agent) informs the server what media types it understands by providing an **Accept HTTP head**. 
+
+According to the `Media Type Specification`, you can **define your own media types using the vendor tree**, `application/vnd.example.resource+json`. 
+
+
+* Note: The `vendor tree` is used for media types associated with publicly available products. It uses the "vnd" facet 
+
+
+Thus, we define a custom vendor media type `application/vnd.todos.{version_number}+json` giving clients the ability to choose which API version they require. 
+
+
+Now that we have the constraint class, let's change our routing to accomodate this. Since we don't want to have the version number as part of the URI (this is argued as an anti-pattern), we will make use of the **module scope to namespace our controllers**.
+
+
+Let's move the exisiting todos and todo-items resources into a `v1` namespace. 
+
+
+
+```Ruby
+# config/routes
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  # namespace the controllers without affecting the URI
+  scope module: :v1, constraints: ApiVersion.new('v1', true) do
+    resources :todos do
+      resources :items
+    end
+  end
+
+
+  post 'auth/login', to: 'authentication#authenticate'
+  post 'signup', to: 'users#create'
+end
+```
+
+
+We have set the version constraint at the namespace level. This means that it will be applied to all resources within it. We have also defined `v1` as the default version in cases where the version is not provided. 
+
+
+
+
+
+
+
+
 
 
 
