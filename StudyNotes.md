@@ -1825,7 +1825,64 @@ end
 ```
 
 
-We have set the version constraint at the namespace level. This means that it will be applied to all resources within it. We have also defined `v1` as the default version in cases where the version is not provided. 
+We have set the version constraint at the namespace level. This means that it will be applied to all resources within it. We have also defined `v1` as the default version in cases where the version is not provided. In the even that we were to add new versions, they would have to be defined **above** the default version since Rails will cycle through all routes from top to bottom searching for one that `matches` (until the method `matches?` resolves to true). 
+
+
+Next, we are going to move the exisiting todos and items controllers into the v1 namespace. First, create a module directory in the controllers folder. 
+
+
+```
+$ mkdir app/controllers/v1
+```
+
+Now we can move `todos_controller.rb` and `items_controller.rb` into this new directory 
+
+```
+$ mv app/controllers/{todos_controller.rb,items_controller.rb} app/controllers/v1
+```
+
+We are not finished yet as we have to define the controllers in the v1 namespace. Let's start with the todos controller. 
+
+
+```Ruby 
+# app/controllers/v1/todos_controller.rb
+module V1
+  class TodosController < ApplicationController
+  # [...]
+  end
+end
+```
+
+We also need to do the same for the items controller. 
+
+
+
+* Note: A `Ruby module` is nothing more than a grouping of objects under a single name. The objects may be constants, methods, classes, or other modules. When a module is used as a container for objects, it is called a `namespace` 
+
+
+
+```Ruby 
+# app/controllers/v1/items_controller.rb
+module V1
+  class ItemsController < ApplicationController
+  # [...]
+  end
+end
+```
+
+We can attempt to start testing but since we are attemping to access a nonexistent version, the API will default to v1 since we set it as the default version. 
+
+
+```
+# get auth token
+$ http :3000/auth/login email=foo@bar.com password=foobar
+# get todos from API v1
+$ http :3000/todos Accept:'application/vnd.todos.v1+json' Authorization:'ey...AWH3FNTd3T0jMB7HnLw2bYQbK0g'
+# attempt to get from API v2
+$ http :3000/todos Accept:'application/vnd.todos.v2+json' Authorization:'ey...AWH3FNTd3T0jMB7HnLw2bYQbK0g'
+```
+
+
 
 
 
