@@ -1959,6 +1959,15 @@ Then the router will generate the path `/patients/17 `. This reduces the brittle
 
 
 
+## Test Controller 
+
+Now back to the application, since the v2 controller is a test controller, we will define an index controller with a dummy response: 
+
+```Ruby
+ 
+```
+
+
 
 
 
