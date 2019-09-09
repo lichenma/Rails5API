@@ -2096,8 +2096,29 @@ $ http :3000/todos page==2 Accept:'application/vnd.todos.v1+json' Authorization:
 ```
 
 
-The page number is part of the query string. 
+The page number is part of the query string. Note that when we request the second page we get an empty array. This is because we don't have more than 20 records in the database. Let's add some test data into the database. 
 
+
+We will be using `faker` so install the faker gem. Faker generates data at random. 
+
+
+```Ruby 
+# Gemfile
+# [...]
+  gem 'faker'
+# [...]
+```
+
+Now in `db/seeds.rb` we will define some seed data. 
+
+```Ruby 
+# db/seeds.rb
+# seed 50 records
+50.times do
+  todo = Todo.create(title: Faker::Lorem.word, created_by: User.first.id)
+  todo.items.create(name: Faker::Lorem.word, done: false)
+end
+```
 
 
 
