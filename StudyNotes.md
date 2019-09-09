@@ -2121,6 +2121,374 @@ end
 ```
 
 
+We can now seed the database by running: 
+
+```bash 
+$ rake db:seed
+```
+
+Now let's fire up the server and rerun the HTTP requests. Since we have test data, we are able to see data from the different pages. 
+
+
+Since I am using `cURL` I am sending a request like this and getting the following response: 
+
+```bash 
+$ curl -X GET -H "Authorization: Bearer {data}" -d "page=2" http://localhost:3000/todos | json_pp
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  5314    0  5308  100     6  26147     29 --:--:-- --:--:-- --:--:-- 26177
+[
+   {
+      "items" : [
+         {
+            "id" : 21,
+            "updated_at" : "2019-09-09T15:39:35.719Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:35.719Z",
+            "todo_id" : 21,
+            "name" : "nemo"
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:35.634Z",
+      "created_at" : "2019-09-09T15:39:35.634Z",
+      "id" : 21,
+      "title" : "ex",
+      "created_by" : "1"
+   },
+   {
+      "created_at" : "2019-09-09T15:39:35.843Z",
+      "items" : [
+         {
+            "id" : 22,
+            "updated_at" : "2019-09-09T15:39:36.005Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:36.005Z",
+            "todo_id" : 22,
+            "name" : "voluptatem"
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:35.843Z",
+      "created_by" : "1",
+      "title" : "aperiam",
+      "id" : 22
+   },
+   {
+      "updated_at" : "2019-09-09T15:39:36.140Z",
+      "items" : [
+         {
+            "done" : false,
+            "updated_at" : "2019-09-09T15:39:36.654Z",
+            "created_at" : "2019-09-09T15:39:36.654Z",
+            "id" : 23,
+            "name" : "commodi",
+            "todo_id" : 23
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:36.140Z",
+      "id" : 23,
+      "created_by" : "1",
+      "title" : "nemo"
+   },
+   {
+      "updated_at" : "2019-09-09T15:39:36.768Z",
+      "items" : [
+         {
+            "id" : 24,
+            "updated_at" : "2019-09-09T15:39:36.886Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:36.886Z",
+            "name" : "sed",
+            "todo_id" : 24
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:36.768Z",
+      "id" : 24,
+      "title" : "magni",
+      "created_by" : "1"
+   },
+   {
+      "id" : 25,
+      "title" : "reiciendis",
+      "created_by" : "1",
+      "items" : [
+         {
+            "done" : false,
+            "updated_at" : "2019-09-09T15:39:37.119Z",
+            "created_at" : "2019-09-09T15:39:37.119Z",
+            "id" : 25,
+            "todo_id" : 25,
+            "name" : "maxime"
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:37.020Z",
+      "created_at" : "2019-09-09T15:39:37.020Z"
+   },
+   {
+      "title" : "sunt",
+      "created_by" : "1",
+      "id" : 26,
+      "items" : [
+         {
+            "name" : "blanditiis",
+            "todo_id" : 26,
+            "created_at" : "2019-09-09T15:39:37.337Z",
+            "updated_at" : "2019-09-09T15:39:37.337Z",
+            "done" : false,
+            "id" : 26
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:37.229Z",
+      "updated_at" : "2019-09-09T15:39:37.229Z"
+   },
+   {
+      "items" : [
+         {
+            "id" : 27,
+            "created_at" : "2019-09-09T15:39:37.547Z",
+            "updated_at" : "2019-09-09T15:39:37.547Z",
+            "done" : false,
+            "todo_id" : 27,
+            "name" : "suscipit"
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:37.438Z",
+      "updated_at" : "2019-09-09T15:39:37.438Z",
+      "created_by" : "1",
+      "title" : "in",
+      "id" : 27
+   },
+   {
+      "created_at" : "2019-09-09T15:39:37.647Z",
+      "items" : [
+         {
+            "id" : 28,
+            "updated_at" : "2019-09-09T15:39:37.745Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:37.745Z",
+            "todo_id" : 28,
+            "name" : "minima"
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:37.647Z",
+      "title" : "et",
+      "created_by" : "1",
+      "id" : 28
+   },
+   {
+      "title" : "eaque",
+      "created_by" : "1",
+      "id" : 29,
+      "items" : [
+         {
+            "id" : 29,
+            "created_at" : "2019-09-09T15:39:37.985Z",
+            "updated_at" : "2019-09-09T15:39:37.985Z",
+            "done" : false,
+            "todo_id" : 29,
+            "name" : "enim"
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:37.864Z",
+      "created_at" : "2019-09-09T15:39:37.864Z"
+   },
+   {
+      "created_at" : "2019-09-09T15:39:38.106Z",
+      "items" : [
+         {
+            "name" : "beatae",
+            "todo_id" : 30,
+            "id" : 30,
+            "updated_at" : "2019-09-09T15:39:38.226Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:38.226Z"
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:38.106Z",
+      "created_by" : "1",
+      "title" : "est",
+      "id" : 30
+   },
+   {
+      "created_by" : "1",
+      "title" : "molestiae",
+      "id" : 31,
+      "created_at" : "2019-09-09T15:39:38.326Z",
+      "items" : [
+         {
+            "name" : "harum",
+            "todo_id" : 31,
+            "updated_at" : "2019-09-09T15:39:38.427Z",
+            "created_at" : "2019-09-09T15:39:38.427Z",
+            "done" : false,
+            "id" : 31
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:38.326Z"
+   },
+   {
+      "items" : [
+         {
+            "name" : "voluptas",
+            "todo_id" : 32,
+            "id" : 32,
+            "done" : false,
+            "updated_at" : "2019-09-09T15:39:38.647Z",
+            "created_at" : "2019-09-09T15:39:38.647Z"
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:38.526Z",
+      "updated_at" : "2019-09-09T15:39:38.526Z",
+      "title" : "porro",
+      "created_by" : "1",
+      "id" : 32
+   },
+   {
+      "created_by" : "1",
+      "title" : "quia",
+      "id" : 33,
+      "updated_at" : "2019-09-09T15:39:38.746Z",
+      "items" : [
+         {
+            "name" : "voluptatibus",
+            "todo_id" : 33,
+            "done" : false,
+            "updated_at" : "2019-09-09T15:39:38.856Z",
+            "created_at" : "2019-09-09T15:39:38.856Z",
+            "id" : 33
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:38.746Z"
+   },
+   {
+      "items" : [
+         {
+            "todo_id" : 34,
+            "name" : "id",
+            "id" : 34,
+            "updated_at" : "2019-09-09T15:39:39.097Z",
+            "created_at" : "2019-09-09T15:39:39.097Z",
+            "done" : false
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:38.988Z",
+      "updated_at" : "2019-09-09T15:39:38.988Z",
+      "id" : 34,
+      "created_by" : "1",
+      "title" : "porro"
+   },
+   {
+      "items" : [
+         {
+            "id" : 35,
+            "created_at" : "2019-09-09T15:39:39.325Z",
+            "updated_at" : "2019-09-09T15:39:39.325Z",
+            "done" : false,
+            "todo_id" : 35,
+            "name" : "qui"
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:39.227Z",
+      "updated_at" : "2019-09-09T15:39:39.227Z",
+      "title" : "quo",
+      "created_by" : "1",
+      "id" : 35
+   },
+   {
+      "id" : 36,
+      "created_by" : "1",
+      "title" : "dignissimos",
+      "created_at" : "2019-09-09T15:39:39.447Z",
+      "items" : [
+         {
+            "name" : "doloribus",
+            "todo_id" : 36,
+            "id" : 36,
+            "done" : false,
+            "updated_at" : "2019-09-09T15:39:39.555Z",
+            "created_at" : "2019-09-09T15:39:39.555Z"
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:39.447Z"
+   },
+   {
+      "created_at" : "2019-09-09T15:39:39.689Z",
+      "items" : [
+         {
+            "name" : "velit",
+            "todo_id" : 37,
+            "created_at" : "2019-09-09T15:39:39.776Z",
+            "updated_at" : "2019-09-09T15:39:39.776Z",
+            "done" : false,
+            "id" : 37
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:39.689Z",
+      "created_by" : "1",
+      "title" : "repellat",
+      "id" : 37
+   },
+   {
+      "created_at" : "2019-09-09T15:39:39.869Z",
+      "items" : [
+         {
+            "name" : "cum",
+            "todo_id" : 38,
+            "updated_at" : "2019-09-09T15:39:39.965Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:39.965Z",
+            "id" : 38
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:39.869Z",
+      "created_by" : "1",
+      "title" : "minima",
+      "id" : 38
+   },
+   {
+      "items" : [
+         {
+            "name" : "quod",
+            "todo_id" : 39,
+            "updated_at" : "2019-09-09T15:39:40.164Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:40.164Z",
+            "id" : 39
+         }
+      ],
+      "updated_at" : "2019-09-09T15:39:40.063Z",
+      "created_at" : "2019-09-09T15:39:40.063Z",
+      "id" : 39,
+      "title" : "ipsam",
+      "created_by" : "1"
+   },
+   {
+      "updated_at" : "2019-09-09T15:39:40.284Z",
+      "items" : [
+         {
+            "id" : 40,
+            "updated_at" : "2019-09-09T15:39:40.372Z",
+            "done" : false,
+            "created_at" : "2019-09-09T15:39:40.372Z",
+            "todo_id" : 40,
+            "name" : "reiciendis"
+         }
+      ],
+      "created_at" : "2019-09-09T15:39:40.284Z",
+      "title" : "at",
+      "created_by" : "1",
+      "id" : 40
+   }
+]
+
+```
+
+# Conclusion 
+
+In this tutorial we went through generating an API-only Rails application, setting up a test framework, using Test Driven Development to implement the todo API, adding token-based authentication with JWT, versioning the API, serializing with active model serializers, and adding pagination features. 
+
+
+Now we should have an introduction to building a RESTful API with Rails 5. 
+
 
 
 
