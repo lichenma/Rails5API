@@ -1984,7 +1984,18 @@ $ http :3000/todos Accept:'application/vnd.todos.v2+json' Authorization:'eyJ0e..
 
 
 
+# Serializers 
 
+Currently if we wanted to get a todo and its items, we would need to make two API calls - this works just fine but it is not ideal. 
+
+We can achieve the same result with one request using serializers. `Serializers` allow for custom representations of JSON responses. `Active model serializers` make it easy to deal which model attributes and relationships need to be serialized. In order to get todos with their respective items, we need to define serializers on the Todo model to include its attributes and relationships. 
+
+
+We start by adding active model serializers to the Gemfile: 
+
+```
+
+```
 
 
 
