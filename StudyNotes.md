@@ -2039,6 +2039,33 @@ $ http POST :3000/todos/1/items name='Listen to Don Giovanni' Accept:'applicatio
 $ http :3000/todos Accept:'application/vnd.todos.v1+json' Authorization:'ey...HnLw2bYQbK0g'
 ```
 
+Now when we make a call to get todos we also an array of items - one request to rule them all! 
+
+
+# Pagination 
+
+A few years down the line our API has suddenly become very popular. Now everyone has something to do and our data set has grown substantially. To ensure that the requests are still fast and optimized we are going to add pagination - this gives clients the power to say what portion of the data they require. 
+
+
+To achieve this we will make use of the `will_paginate` gem 
+
+
+Let's add it to the Gemfile: 
+
+```Ruby 
+# Gemfile
+# [...]
+  gem 'will_paginate', '~> 3.1.0'
+# [...]
+```
+
+Install it: 
+
+
+```
+$ bundle install 
+```
+
 
 
 
