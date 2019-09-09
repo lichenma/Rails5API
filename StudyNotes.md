@@ -1959,6 +1959,10 @@ Then the router will generate the path `/patients/17 `. This reduces the brittle
 
 
 
+
+
+
+
 ## Test Controller 
 
 Now back to the application, since the v2 controller is a test controller, we will define an index controller with a dummy response: 
@@ -1993,9 +1997,51 @@ We can achieve the same result with one request using serializers. `Serializers`
 
 We start by adding active model serializers to the Gemfile: 
 
+```Ruby
+# # Gemfile
+# [...]
+  gem 'active_model_serializers', '~> 0.10.0'
+# [...]
 ```
 
+Then run bundle to install it: 
+
+```bash
+$ bundle install 
 ```
+
+Now we want to generate a serializer from the todo model: 
+
+```bash 
+$ rails g serializer todo 
+``` 
+
+This creates a new directory `app/serializers` and adds a new file `todo_serializer.rb`. We are going to define the todo serializer with the data that we want it to contain. 
+
+
+```Ruby
+# app/serializers/todo_serializer.rb
+class TodoSerializer < ActiveModel::Serializer
+  # attributes to be serialized  
+  attributes :id, :title, :created_by, :created_at, :updated_at
+  # model association
+  has_many :items
+end
+```
+
+We define a `whitelist` of attributes to be serialized and the model association. This way the payload will include an array of items. We can start up the server and begin testing this. 
+
+
+```bash 
+# create an item for todo with id 1
+$ http POST :3000/todos/1/items name='Listen to Don Giovanni' Accept:'application/vnd.todos.v1+json' Authorization:'ey...HnLw2bYQbK0g'
+# get all todos
+$ http :3000/todos Accept:'application/vnd.todos.v1+json' Authorization:'ey...HnLw2bYQbK0g'
+```
+
+
+
+
 
 
 
