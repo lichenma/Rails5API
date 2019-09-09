@@ -1964,8 +1964,26 @@ Then the router will generate the path `/patients/17 `. This reduces the brittle
 Now back to the application, since the v2 controller is a test controller, we will define an index controller with a dummy response: 
 
 ```Ruby
- 
+ # app/controllers/v2/todos_controller.rb
+class V2::TodosController < ApplicationController
+  def index
+    json_response({ message: 'Hello there'})
+  end
+end
 ```
+
+Note the namespace syntax, this is shorthand in Ruby to define a class within a namespace. Now we can fire up the server and start running some tests. 
+
+
+```
+# get todos from API v1
+$ http :3000/todos Accept:'application/vnd.todos.v1+json' Authorization:'eyJ0e...Lw2bYQbK0g'
+# get todos from API v2
+$ http :3000/todos Accept:'application/vnd.todos.v2+json' Authorization:'eyJ0e...Lw2bYQbK0g'
+```
+
+
+
 
 
 
