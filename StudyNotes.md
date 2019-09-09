@@ -2066,7 +2066,7 @@ Install it:
 $ bundle install 
 ```
 
-Let's modify the todos controller index action to paginate its reponse 
+Let's modify the todos controller index action to paginate its response.  
 
 ```Ruby 
 # app/controllers/v1/todos_controller.rb
@@ -2083,6 +2083,20 @@ module V1
 end
 ```
 
+The index action checks for the page number in the request params. If provided, it will return the page data with each page having twenty records each. We can now fire up the Rails server and run some tests .
+
+
+```bash 
+# request without page
+$ http :3000/todos Accept:'application/vnd.todos.v1+json' Authorization:'eyJ0...nLw2bYQbK0g'
+# request for page 1
+$ http :3000/todos page==1 Accept:'application/vnd.todos.v1+json' Authorization:'eyJ0...nLw2bYQbK0g'
+# request for page 2
+$ http :3000/todos page==2 Accept:'application/vnd.todos.v1+json' Authorization:'eyJ0...nLw2bYQbK0g'
+```
+
+
+The page number is part of the query string. 
 
 
 
