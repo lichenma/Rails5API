@@ -33,7 +33,7 @@ To be Updated
 
 ## Built With
 
-* [RUby on Rails](https://rubyonrails.org/) - Environment
+* [Ruby on Rails](https://rubyonrails.org/) - Environment
 
 ## Acknowledgments
 
