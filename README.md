@@ -33,8 +33,7 @@ To be Updated
 
 ## Built With
 
-* [NodeJS](https://nodejs.org/en/) - Environment
-* [npm](https://www.npmjs.com/) - Package Manager
+* [RUby on Rails](https://rubyonrails.org/) - Environment
 
 ## Acknowledgments
 
