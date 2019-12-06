@@ -107,8 +107,11 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
+    msgpack (1.3.1)
     msgpack (1.3.1-x64-mingw32)
     nio4r (2.5.1)
+    nokogiri (1.10.4)
+      mini_portile2 (~> 2.4.0)
     nokogiri (1.10.4-x64-mingw32)
       mini_portile2 (~> 2.4.0)
     pry (0.12.2)
@@ -116,7 +119,7 @@ GEM
       method_source (~> 0.9.0)
     pry-rails (0.3.9)
       pry (>= 0.10.4)
-    puma (3.12.1)
+    puma (3.12.2)
     rack (2.0.7)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -195,6 +198,7 @@ GEM
     zeitwerk (2.1.9)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES
@@ -208,7 +212,7 @@ DEPENDENCIES
   faker
   jwt
   pry-rails
-  puma (~> 3.11)
+  puma (~> 3.12)
   rails (~> 6.0.0)
   rspec-rails (~> 3.5)
   shoulda-matchers (~> 3.1)
